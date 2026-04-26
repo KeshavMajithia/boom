@@ -219,7 +219,7 @@ impl TempoModel {
 
     /// Run inference: alert → evidence → class probabilities.
     #[instrument(skip_all, err)]
-    pub fn predict_alert(&self, alert: &ZtfAlertForEnrichment) -> Result<TempoOutput, ModelError> {
+    pub fn predict_alert(&mut self, alert: &ZtfAlertForEnrichment) -> Result<TempoOutput, ModelError> {
         let (x, pad_mask, global_features) = self.build_input(alert)?;
 
         let model_inputs = inputs! {
@@ -271,7 +271,7 @@ impl TempoModel {
     /// (e.g., for stricter filtering on high-value science programs).
     #[instrument(skip_all, err)]
     pub fn predict_alert_with_threshold(
-        &self,
+        &mut self,
         alert: &ZtfAlertForEnrichment,
         threshold: f32,
     ) -> Result<TempoOutput, ModelError> {

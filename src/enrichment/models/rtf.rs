@@ -167,7 +167,7 @@ impl RtfModel {
     /// in the current exported graph).
     #[instrument(skip_all, err)]
     pub fn predict_embed(
-        &self,
+        &mut self,
         x: &Array<f32, Dim<[usize; 3]>>,
         pad_mask: &Array<bool, Dim<[usize; 2]>>,
     ) -> Result<Vec<f32>, ModelError> {
@@ -187,7 +187,7 @@ impl RtfModel {
     /// Run the reconstruction model: x, pad_mask → scalar error.
     #[instrument(skip_all, err)]
     pub fn predict_recon(
-        &self,
+        &mut self,
         x: &Array<f32, Dim<[usize; 3]>>,
         pad_mask: &Array<bool, Dim<[usize; 2]>>,
     ) -> Result<f32, ModelError> {
@@ -212,7 +212,7 @@ impl RtfModel {
 
     /// Full inference: build input tensor from alert, run both models.
     #[instrument(skip_all, err)]
-    pub fn predict_alert(&self, alert: &ZtfAlertForEnrichment) -> Result<RtfOutput, ModelError> {
+    pub fn predict_alert(&mut self, alert: &ZtfAlertForEnrichment) -> Result<RtfOutput, ModelError> {
         let (x, pad_mask) = self.build_input(alert)?;
 
         let embedding = self.predict_embed(&x, &pad_mask)?;
@@ -243,7 +243,7 @@ fn band_to_idx(band: &Band) -> usize {
 ///   diffmaglim, sky, ndethist, ncovhist, sigmapsf, chinr, classtar, rb,
 ///   chipsf, distnr, magnr, fwhm, srmag1, sgmag1, simag1, szmag1,
 ///   srmag2, sgmag2, simag2, szmag2, clrcoeff, clrcounc, zpclrcov
-fn extract_candidate_metadata(candidate: &crate::alert::ztf::Candidate) -> [f32; N_META] {
+fn extract_candidate_metadata(candidate: &crate::alert::Candidate) -> [f32; N_META] {
     [
         candidate.sgscore1.unwrap_or(0.0),
         candidate.sgscore2.unwrap_or(0.0),
